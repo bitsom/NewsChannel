@@ -15,14 +15,12 @@ import org.jsoup.select.Elements;
 public class RssFeedHandler {
 
 	public static List<News> parseRss(String urlAdd){
-		//String urlAdd = "http://feeds.bbci.co.uk/news/world/rss.xml";
-		//rssUrl = new URL(urlAdd);
+		
 		try{
 		Document doc = Jsoup.connect(urlAdd).get();
 		
 		if (doc != null)
         {
-			System.out.println("inside list of RssFeedHandler");
            // ToldotItem item = null;
 			List<News> list = new ArrayList<News>();
 			
@@ -33,14 +31,16 @@ public class RssFeedHandler {
             	News news = new News();
                 org.jsoup.nodes.Document docInner = Jsoup.parse(link.outerHtml());
                // item = new ToldotItem();
-                   Elements linksInner = docInner.select("title");
-                   String title =    linksInner.text();
-                   news.setTitle(title);
-
-                    linksInner = docInner.select("pubDate");
-                    String pubDate  = linksInner.text();
-                    news.setPubDate(pubDate);
+                
+                	Elements linksInner = docInner.select("pubDate");
+                	String pubDate  = linksInner.text();
+                	news.setPubDate(pubDate);
+                
+                    linksInner = docInner.select("title");
+                    String title =    linksInner.text();
+                    news.setTitle(title);
                     
+
                     long timestamp = convertToEpoch(pubDate);
                     news.setTimeStamp(timestamp);
                     

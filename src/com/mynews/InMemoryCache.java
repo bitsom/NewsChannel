@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class InMemoryCache {
 
 	
-	public static Map<String, TreeSet<News>> cache = new HashMap<String, TreeSet<News>>();
+	public static ConcurrentMap<String, TreeSet<News>> cache = new ConcurrentHashMap<String, TreeSet<News>>();
 	
 	
 	public static void addFeed(String key, News news){
-		System.out.println(" addFeed methods : key " + news.getDescription());
+		System.out.println("key " + news.getTitle());
 		if(cache.containsKey(key)){
 			TreeSet<News> t = cache.get(key);
 			t.add(news);
@@ -28,21 +30,31 @@ public class InMemoryCache {
 			
 	}
 	public static  List<News> getFeed(String query){
-		RSSSchedular.execute();
-		System.out.println("query "  + query);
-		List<News> result = new ArrayList<News>(2);
+		
+		if(InMemoryCache.cache.size() == 0)
+				RSSSchedular.task();
+		
+		List<News> result = new ArrayList<News>(10);
 		int i =0;
 		
 		
 		TreeSet<News> t = cache.get(query);
+		System.out.println("Query : " + query);
 		
-		Iterator iterator;
-		   iterator = t.iterator();
-		   while (iterator.hasNext()){
-			   //System.out.println(iterator.next().toString() + " ");
-			   result.add((News)iterator.next());
+		
+		if(t == null)
+		{
+			System.out.println("cache is empty");
+			return null;
+		}
+		
+		Iterator iterator = t.iterator();
+		while (iterator.hasNext()){
+			News n = (News)iterator.next();
+			   result.add(n);
+			   System.out.println("n.title" +  n.getTitle());
 			   i++;
-			   if(i ==2)
+			   if(i ==10)
 				   break;
 			  }
 		   

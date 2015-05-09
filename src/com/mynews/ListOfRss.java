@@ -17,13 +17,12 @@ public class ListOfRss {
 		//rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533922/index.rss");
 		//rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533977/index.rss");
 		//rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533975/index.rss");
-		//rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533972/index.rss");
+		rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533972/index.rss");
 		//rssList.add("http://timesofindia.feedsportal.com/c/33039/f/533965/index.rss");
 	}
 
 	public static List<String> getRssList() {
 		ListOfRss();
-		System.out.println("inside list of RSS");
 		return rssList;
 	}
 

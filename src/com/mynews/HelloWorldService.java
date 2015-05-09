@@ -17,15 +17,7 @@ import com.google.gson.Gson;
 	  @Produces(MediaType.APPLICATION_JSON)
 
 	  public Response getLocalCust(@QueryParam("query") String searchString) {
-	   System.out.println("searchString" + searchString);
-		/*  return new Response.ok()
-			.header("Access-Control-Allow-Origin", "*")
-			.header("Access-Control-Allow-Methods",
-					"GET, POST, DELETE, PUT").build(); */
-    //new Gson().toJson(InMemoryCache.getFeed("India"))
-		  
-		  //String output = "I am from 'getLocalCust' method";
-	           return Response.status(200).entity(new Gson().toJson(InMemoryCache.getFeed("india"))).build();
+	           return Response.status(200).entity(new Gson().toJson(InMemoryCache.getFeed(searchString))).build();
 	  }
 	 
 	  @GET
