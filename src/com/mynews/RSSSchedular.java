@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.Date;
 
+import com.google.gson.Gson;
+
+import redis.clients.jedis.Jedis;
+
 
 public class RSSSchedular implements Runnable{
 	
@@ -49,11 +53,12 @@ public class RSSSchedular implements Runnable{
 	
 	public static void execute(int startPos, int stopPos){
 
-		List<String> rssList = ListOfRss.getRssList();
+		List<RSS> rssList = ListOfRss.getRssList();
+		Jedis jedis = new Jedis("localhost");
 
 		if(rssList != null){
 			for (int i = startPos; i<stopPos; i++) {
-				String channel = rssList.get(i);
+				RSS channel = rssList.get(i);
 				List<News> rssObj = RssFeedHandler.parseRss(channel);
 				if(rssObj != null && rssObj.size() > 0){
 					for(News n : rssObj){
@@ -62,6 +67,9 @@ public class RSSSchedular implements Runnable{
 							continue;
 						for(String key : keys){
 							InMemoryCache.addFeed(key, n);
+							String listString = new Gson().toJson(n);
+		                    //System.out.println(listString);
+		                    jedis.set(key, listString);
 						}
 					}
 				}
@@ -76,8 +84,8 @@ public class RSSSchedular implements Runnable{
 	public void run() 
 	{
 		this.running = true;
-		System.out.println("This is currently running on a separate thread, " +
-				"the id is: " + Thread.currentThread().getId()); 
+		/* System.out.println("This is currently running on a separate thread, " +
+				"the id is: " + Thread.currentThread().getId()); */
 
 		execute(l, c);
 		int len = InMemoryCache.cache.size();
@@ -102,7 +110,7 @@ public class RSSSchedular implements Runnable{
 		List<String> keyList = new ArrayList<String>();
 		for(int i=0; i<keys.length; i++){
 			if(keys[i].length() > 4)
-				System.out.println("Keys === >> " +keys[i] );
+				//System.out.println("Keys === >> " +keys[i] );
 				keyList.add(keys[i]);
 		}
 		return keyList;
@@ -120,19 +128,24 @@ public class RSSSchedular implements Runnable{
 					//parseRss(urlAdd);
 					while (true) {
 						List<RSSSchedular> workers = new ArrayList<RSSSchedular>();
-						List<String> rssList = ListOfRss.getRssList();
+						List<RSS> rssList = ListOfRss.getRssList();
 
 						int count = rssList.size();
-						System.out.println("" + count);
+						
 						int start = 0;
 
-						System.out.println("This is currently running on the main thread, " +
-								"the id is: " + Thread.currentThread().getId());
+						/* System.out.println("This is currently running on the main thread, " +
+								"the id is: " + Thread.currentThread().getId()); */
 
 						// start 5 workers
-						for (int i=0; i<1; i++)
+						for (int i=0; i<5; i++)
 						{
-							int end = start + count / 2;
+							int end = 0;
+			                if (count >= 10) {
+			                    end = start + count / 10;
+			                } else {
+			                    end = start + count % 10;
+			                }
 							workers.add(new RSSSchedular(start, end));
 							start = end;
 						}
@@ -146,7 +159,7 @@ public class RSSSchedular implements Runnable{
 			
 	}
 	
-	public static void main(String[] args) {
+	/* public static void main(String[] args) {
 		//String urlAdd = "http://feeds.bbci.co.uk/news/world/rss.xml";
 		//parseRss(urlAdd);
 		
@@ -156,7 +169,7 @@ public class RSSSchedular implements Runnable{
 				//parseRss(urlAdd);
 				while (true) {
 					List<RSSSchedular> workers = new ArrayList<RSSSchedular>();
-					List<String> rssList = ListOfRss.getRssList();
+					List<RSS> rssList = ListOfRss.getRssList();
 
 					int count = rssList.size();
 					System.out.println("" + count);
@@ -180,6 +193,6 @@ public class RSSSchedular implements Runnable{
 					}
 				}
 		
-	}
+	}*/
 
 }

@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 	  @Produces(MediaType.APPLICATION_JSON)
 
 	  public Response getLocalCust(@QueryParam("query") String searchString) {
+		  System.out.println("Request ===>>> " + searchString);
 	           return Response.status(200).entity(new Gson().toJson(InMemoryCache.getFeed(searchString))).build();
 	  }
 	 

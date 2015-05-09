@@ -12,6 +12,7 @@ public class News implements Comparable<News>{
 	public String author;
 	public VideoMedia vm;
 	public AudioMedia am;
+	public String source;
 	
 	public String getDescription() {
 		return description;
@@ -73,6 +74,14 @@ public class News implements Comparable<News>{
 	}
 	public void setLink(String link) {
 		this.link = link;
+	}
+	
+	
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	public int compareTo(News obj) {
 		

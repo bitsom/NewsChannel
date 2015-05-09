@@ -14,9 +14,10 @@ import org.jsoup.select.Elements;
 
 public class RssFeedHandler {
 
-	public static List<News> parseRss(String urlAdd){
+	public static List<News> parseRss(RSS rss){
 		
 		try{
+		String 	urlAdd = rss.getUrl();
 		Document doc = Jsoup.connect(urlAdd).get();
 		
 		if (doc != null)
@@ -31,18 +32,26 @@ public class RssFeedHandler {
             	News news = new News();
                 org.jsoup.nodes.Document docInner = Jsoup.parse(link.outerHtml());
                // item = new ToldotItem();
+                    
                 
                 	Elements linksInner = docInner.select("pubDate");
                 	String pubDate  = linksInner.text();
-                	news.setPubDate(pubDate);
-                
+                	
+                	long timestamp = convertToEpoch(pubDate);
+                    
+                    
+                    if(timestamp <= rss.getCurTime())
+                    	break;
+                    
+                    news.setPubDate(pubDate);
+                    news.setTimeStamp(timestamp);
+                	news.setSource(rss.getSource());
                     linksInner = docInner.select("title");
                     String title =    linksInner.text();
                     news.setTitle(title);
                     
 
-                    long timestamp = convertToEpoch(pubDate);
-                    news.setTimeStamp(timestamp);
+                    
                     
                     linksInner = docInner.select("link");
                     String _link  = linksInner.text();
@@ -50,6 +59,7 @@ public class RssFeedHandler {
 
                     linksInner = docInner.select("description");
                     String description  = linksInner.text();
+                    description = Jsoup.parse(description).text();
                     news.setDescription(description);
                     
                     linksInner = docInner.select("guid");
@@ -86,6 +96,7 @@ public class RssFeedHandler {
                
 
             }
+            rss.setCurTime(list.get(list.size()-1).getTimeStamp());
             return list;
         }
 		}catch(Exception e){
@@ -115,7 +126,7 @@ public class RssFeedHandler {
 	
 	public static void main(String[] args) {
 		String urlAdd = "http://feeds.bbci.co.uk/news/world/rss.xml";
-		parseRss(urlAdd);
+		//parseRss(urlAdd);
 	}
 
 }
