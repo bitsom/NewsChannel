@@ -7,10 +7,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.json.JSONObject;
+
+import redis.clients.jedis.Jedis;
 
 
 public class InMemoryCache {
@@ -77,6 +82,32 @@ public class InMemoryCache {
 		
 		return result;
 	}
+	
+	public static List<JSONObject> getFromCache(String key) {
+        String[] sub = key.split(" ");
+        Jedis jedis = new Jedis("localhost");
+        List<JSONObject> t = new ArrayList<JSONObject>();
+        String result = "";
+        int i = 0;
+        
+        for(String s : sub){
+            String temp = jedis.get(s);
+            if(temp == null)
+                continue;
+            String[] tmpList = temp.split(";");
+            for (String each: tmpList) {
+                   //result.add(each.replace('\"', '"'));
+            		JSONObject jsonObj = new JSONObject(each);
+            		t.add(jsonObj);
+                   //result += each.replace('\"', '"') + ';';
+                   i++;
+                   if(i == 10)
+                       break;
+           }
+        }
+        
+        return t;
+    }
 	
 }
 

@@ -18,7 +18,18 @@ import com.google.gson.Gson;
 
 	  public Response getLocalCust(@QueryParam("query") String searchString) {
 		  System.out.println("Request ===>>> " + searchString);
-	           return Response.status(200).entity(new Gson().toJson(InMemoryCache.getFeed(searchString))).build();
+	           //return Response.status(200).entity(new Gson().toJson(InMemoryCache.getFeed(searchString))).build();
+	           String json = new Gson().toJson(InMemoryCache.getFeed(searchString));
+               
+               if (json == null) {
+            	   System.out.println("test");
+            	   json = new Gson().toJson(InMemoryCache.getFeed(searchString));
+            	   return Response.status(200).entity(json).build();
+            	  
+               }
+               else {
+            	   	return Response.status(200).entity(json).build();
+               }
 	  }
 	 
 	  @GET
