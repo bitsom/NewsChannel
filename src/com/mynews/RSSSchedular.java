@@ -67,9 +67,16 @@ public class RSSSchedular implements Runnable{
 							continue;
 						for(String key : keys){
 							InMemoryCache.addFeed(key, n);
+							System.out.println("Keyname: " + key);
+							key = key.replaceAll("[^\\w\\s]","");
 							String listString = new Gson().toJson(n);
+							String val = jedis.get(key);
+							if (val != null) {
+								val += ';' + listString;
+							}
+							val = listString;
 		                    //System.out.println(listString);
-		                    jedis.set(key, listString);
+		                    jedis.set(key, val);
 						}
 					}
 				}
@@ -109,7 +116,7 @@ public class RSSSchedular implements Runnable{
 		String[] keys = title.split(" ");
 		List<String> keyList = new ArrayList<String>();
 		for(int i=0; i<keys.length; i++){
-			if(keys[i].length() > 4)
+			if(keys[i].length() >= 3)
 				//System.out.println("Keys === >> " +keys[i] );
 				keyList.add(keys[i]);
 		}
